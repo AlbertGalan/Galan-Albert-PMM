@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
   final estil = TextStyle(fontSize: 24);
+  int _contador = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,7 @@ class HomePage extends StatelessWidget {
           children: [
             Text('Nombre de clicks:', style: estil),
             Text(
-              '0',
+              _contador.toString(),
               style: estil,
             ),
           ],
@@ -27,10 +29,11 @@ class HomePage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          print('Uep, com anam?');
+          _contador = _contador + 1;
         },
         child: Icon(Icons.add),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

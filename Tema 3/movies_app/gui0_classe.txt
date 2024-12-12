@@ -1,0 +1,36 @@
+1. Unzip
+2. Resoldre errors
+    - flutter pub get
+    - textTheme.headlineMedium .bodySmall .labelLarge
+3. Instal·lar paquets:  http provider
+
+4. movies_provider.dart
+5. MultiProvider
+    no surten prints! perq no hi ha acces: lazy
+6. Peticio http
+    - http
+    - tmdb
+7. models & quicktype
+8. getOnDisplayMovies()
+    final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
+    onDisplayMovies = nowPlayingResponse.results;
+    notifyListeners();
+9. accés al provider HomeScreen
+    final moviesProvider = Provider.of<MoviesProvider>(context, listen: true); //dflt true
+    CardSwiper(movies: moviesProvider.onDisplayMovies),
+    final movie = movies[index];
+    movie.fullPosterPath
+10. CardSwiper
+    final List<Movie> movies;
+    const CardSwiper({super.key, required this.movies});
+11. posterPath
+    -> Movie    get fullPosterPath {
+                    if (this.posterPath == null) {
+                    return 'https://i.stack.imgur.com/GNhxO.png';
+                    } else {
+                    return 'https://image.tmdb.org/t/p/w500$posterPath';
+                    }
+                }
+12. CardSwiper llista 0<=3
+13. Realitzar el mateix però per omplir el poster de populars:
+    Dins el provider geton populars (API)

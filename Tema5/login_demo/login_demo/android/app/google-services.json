@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "649494341827",
+    "firebase_url": "https://provant-dda36-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "provant-dda36",
+    "storage_bucket": "provant-dda36.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:649494341827:android:309c6747f4556bab8dda76",
+        "android_client_info": {
+          "package_name": "com.example.login_demo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB51YwefqGW6rf3v0BZ2i-OmkBE3KGQq0g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/persona.dart';
 
 class PersonalPage extends StatefulWidget {
@@ -18,9 +19,10 @@ class _PersonalPageState extends State<PersonalPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // Obtenim les dades de la persona passades com argument.
     persona = ModalRoute.of(context)!.settings.arguments as Persona;
 
-    // Inicialitzem els controllers.
+    // Inicialitzem els controllers amb ses dades.
     _nomController = TextEditingController(text: persona.nom);
     _cognomController = TextEditingController(text: persona.cognom);
     _dataNaixementController =
@@ -29,22 +31,27 @@ class _PersonalPageState extends State<PersonalPage> {
     _contrasenyaController = TextEditingController(text: persona.contrasenya);
   }
 
-  // Funció per mostrar el selector de data
+//Guardqam les dades de la persona
+  Future<void> _savePersona() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nom', persona.nom);
+    await prefs.setString('cognom', persona.cognom);
+    await prefs.setString('dataNaixement', persona.dataNaixement);
+    await prefs.setString('correu', persona.correu);
+    await prefs.setString('contrasenya', persona.contrasenya);
+  }
+
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime? pickedDate = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.tryParse(persona.dataNaixement) ?? DateTime.now(),
+      initialDate: DateTime.parse(persona.dataNaixement),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
-
-    if (pickedDate != null) {
+    if (picked != null && picked != DateTime.parse(persona.dataNaixement)) {
       setState(() {
-        String formattedDate =
-            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-        _dataNaixementController.text = formattedDate;
-        persona.dataNaixement =
-            formattedDate; // Actualitzar l'objecte `persona`.
+        persona.dataNaixement = picked.toIso8601String().split('T')[0];
+        _dataNaixementController.text = persona.dataNaixement;
       });
     }
   }
@@ -53,57 +60,67 @@ class _PersonalPageState extends State<PersonalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Introdueix Credencials'),
+        title: Text('Editar Persona'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _nomController,
-                decoration: InputDecoration(labelText: 'Nom'),
-              ),
-              TextFormField(
-                controller: _cognomController,
-                decoration: InputDecoration(labelText: 'Cognom'),
-              ),
-              TextFormField(
-                controller: _dataNaixementController,
-                readOnly: true,
-                decoration: InputDecoration(
-                  labelText: 'Data de Naixement',
-                  suffixIcon: Icon(Icons.calendar_today),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextFormField(
+                  controller: _nomController,
+                  onChanged: (value) {
+                    persona.nom = value;
+                  },
+                  decoration: InputDecoration(labelText: 'Nom'),
                 ),
-                onTap: () => _selectDate(context),
-              ),
-              TextFormField(
-                controller: _correuController,
-                decoration: InputDecoration(labelText: 'Correu Electrònic'),
-              ),
-              TextFormField(
-                controller: _contrasenyaController,
-                decoration: InputDecoration(labelText: 'Contrasenya'),
-                obscureText: true,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  // Persona nova
-                  final updatedPersona = Persona(
-                    nom: _nomController.text,
-                    cognom: _cognomController.text,
-                    dataNaixement: _dataNaixementController.text,
-                    correu: _correuController.text,
-                    contrasenya: _contrasenyaController.text,
-                  );
-                  // Retornem l'objecte a la HomePage.
-                  Navigator.pop(context, updatedPersona);
-                },
-                child: Text('Desa'),
-              ),
-            ],
+                TextFormField(
+                  controller: _cognomController,
+                  onChanged: (value) {
+                    persona.cognom = value;
+                  },
+                  decoration: InputDecoration(labelText: 'Llinatges'),
+                ),
+                TextFormField(
+                  controller: _dataNaixementController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    labelText: 'Data de Naixement',
+                    suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                  onTap: () => _selectDate(context),
+                ),
+                TextFormField(
+                  controller: _correuController,
+                  onChanged: (value) {
+                    persona.correu = value;
+                  },
+                  decoration: InputDecoration(labelText: 'Correu Electrònic'),
+                ),
+                TextFormField(
+                  controller: _contrasenyaController,
+                  onChanged: (value) {
+                    persona.contrasenya = value;
+                  },
+                  decoration: InputDecoration(labelText: 'Contrasenya'),
+                  obscureText: true,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _savePersona();
+                      Navigator.pop(
+                          context, persona); // Retornar les dades actualitzades
+                    }
+                  },
+                  child: Text('Guardar'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
